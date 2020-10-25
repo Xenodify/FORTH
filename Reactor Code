@@ -1,0 +1,175 @@
+VARIABLE $Slot
+VARIABLE $Blank
+VARIABLE $Void
+VARIABLE $StorageItem
+VARIABLE $Tenacity
+VARIABLE $Damage_Fuel
+VARIABLE $Damage_Cond
+VARIABLE $Falseness
+VARIABLE $FalsenessTwo
+ 
+9300 $Damage_Cond !
+15 $Tenacity !
+5 $Falseness !
+8 $FalsenessTwo !
+9950 $Damage_Fuel !
+ 
+: .main
+SORTADDR @ 11 = IF ." Condensator" THEN
+SORTADDR @ 12 = IF ." Fuel" THEN
+;
+ 
+: launch
+PAGE
+CR ." ◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾"
+CR ." Wait. The reactor is being tested for performance. "
+CR ." 10%"
+$Falseness @ TICKS
+CR ." 21%"
+$Falseness @ TICKS
+CR ." 44%"
+$FalsenessTwo @ TICKS
+CR ." 47%"
+$FalsenessTwo @ TICKS
+CR ." 76%"
+$Falseness @ TICKS
+CR ." 84%"
+$FalsenessTwo @ TICKS
+CR ." 99%"
+0 $Blank !
+0 $Void !
+4 SORTADDR !
+3 IOXADDR !
+54 0 DO
+I SORTSLOT@ 0=
+IF
+$Void @ 1 + $Void !
+THEN
+2DROP
+LOOP
+$Void @
+IF
+CR ." STOPPING!"
+CR ." Are u in your mind? "
+." There are " $Void @ . ." empty slots in the reactor"
+ABORT
+ELSE
+CR ." DONE!"
+CR ." ◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾"
+CR ." "
+1 $Blank !
+THEN
+;
+ 
+: turn_on
+$Blank @
+IF
+0 IOX!
+THEN
+;
+ 
+: turn_off
+1 IOX!
+$Tenacity @ TICKS
+;
+ 
+: changement
+turn_off
+SORTCOLOR!
+1 $Slot @ SORTPULL $StorageItem !
+SORTADDR !
+CR ." CHANGE: " .main ."  was "
+SORTSLOT 0 DO
+1 I SORTPULL
+IF
+." successful"
+0 $StorageItem !
+LEAVE
+THEN
+LOOP
+$StorageItem @
+IF
+PAGE
+CR ." ◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾"
+CR ." "
+CR ." REACTOR HAS STOPPED"
+CR ." Error code #001 (if you think this is a mistake, write Xenodify)
+CR ." Last message from the reactor"
+CR ." CHANGE: " .main ."  was failed"
+CR ." "
+CR ." ◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾"
+CR ." "
+CR ." Fixed an error? Write go"
+CR ." "
+CR ." ◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾"
+0 $Idle !
+ABORT
+THEN
+4 SORTADDR !
+$Tenacity @ TICKS
+turn_on
+;
+ 
+: damage_controller
+SORTDMG@ <= IF
+changement
+ELSE
+2DROP
+THEN
+;
+ 
+: control
+54 0 DO
+I $Slot !
+I SORTSLOT@
+IF
+24708 =
+IF
+DROP
+11
+12
+$Damage_Cond @ damage_controller
+ELSE
+15843 =
+IF
+12
+14
+$Damage_Fuel @ damage_controller
+THEN
+THEN
+ELSE
+turn_off
+PAGE
+CR ." ◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾"
+CR ." "
+CR ." REACTOR HAS STOPPED"
+CR ." Error code #002 (if you think this is a mistake, write Xenodify)
+CR ." Last message from the reactor"
+CR ." The reactor has empty slots"
+CR ." "
+CR ." ◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾"
+CR ." "
+CR ." Fixed an error? Write go"
+CR ." "
+CR ." ◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾"
+0 $Blank !
+ABORT
+THEN
+LOOP
+;
+ 
+: go
+launch
+turn_on
+BEGIN
+control
+KEY?
+UNTIL
+PAGE
+CR ." ◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾"
+CR ." "
+CR ." STOPPED! (manual)"
+CR ." "
+CR ." ◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾◾"
+1 IOX!
+; 
