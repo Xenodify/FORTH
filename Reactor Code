@@ -83,7 +83,7 @@ SORTCOLOR!
 1 $Slot @ SORTPULL $StorageItem !
 SORTADDR !
 CR ." CHANGE: " .main ."  was "
-SORTSLOT 0 DO
+SORTSLOTS 0 DO
 1 I SORTPULL
 IF
 ." successful"
